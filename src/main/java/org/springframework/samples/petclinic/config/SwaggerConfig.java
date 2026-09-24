@@ -19,6 +19,7 @@ package org.springframework.samples.petclinic.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 import java.util.Collections;
 
@@ -37,7 +38,8 @@ import io.swagger.v3.oas.models.info.License;
 public class SwaggerConfig {
 
     @Bean
-    OpenAPI customOpenAPI() {
+    @Primary
+    OpenAPI petclinicOpenAPI() {
         return new OpenAPI()
             .components(new Components())
             .info(new Info()
