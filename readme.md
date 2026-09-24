@@ -283,6 +283,45 @@ File -> Import -> Maven -> Existing Maven project
 | Spring Data JPA | [springdatajpa folder](src/main/java/org/springframework/samples/petclinic/repository/springdatajpa) |
 | Tests | [AbstractClinicServiceTests.java](src/test/java/org/springframework/samples/petclinic/service/clinicService/AbstractClinicServiceTests.java) |
 
+## Building and Running with Docker (Dockerfile)
+
+The included [`Dockerfile`](Dockerfile) uses a **multi-stage build** so that a single file handles both compiling the application and producing a minimal runtime image. No local JDK or Maven installation is required.
+
+### How it works
+
+| Stage | Base image | What it does |
+|-------|-----------|--------------|
+| `build` | `eclipse-temurin:17-jdk` | Resolves Maven dependencies, then compiles and packages the fat JAR (`mvn package -DskipTests`) |
+| runtime | `eclipse-temurin:17-jre` | Copies only the JAR from the build stage; runs as a non-root `petclinic` user |
+
+The dependency-resolution step is cached as its own layer — rebuilds are fast as long as `pom.xml` has not changed.
+
+### Build the image
+
+```sh
+docker build -t spring-petclinic-rest .
+```
+
+### Run the image
+
+With the default H2 in-memory database (no external dependencies):
+
+```sh
+docker run -p 9966:9966 spring-petclinic-rest
+```
+
+With a specific database profile:
+
+```sh
+# MySQL (start MySQL first via docker compose --profile mysql up -d)
+docker run -p 9966:9966 spring-petclinic-rest --spring.profiles.active=mysql,spring-data-jpa
+
+# PostgreSQL (start PostgreSQL first via docker compose --profile postgres up -d)
+docker run -p 9966:9966 spring-petclinic-rest --spring.profiles.active=postgres,spring-data-jpa
+```
+
+Once running, the API is available at [http://localhost:9966/petclinic/](http://localhost:9966/petclinic/).
+
 ## Publishing a Docker image
 
 This application uses [Google Jib](https://github.com/GoogleContainerTools/jib) to build an optimized Docker image into the [Docker Hub](https://cloud.docker.com/u/springcommunity/repository/docker/springcommunity/spring-petclinic-rest/) repository.

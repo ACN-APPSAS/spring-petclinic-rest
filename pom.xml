@@ -19,6 +19,12 @@
 
     <properties>
 
+        <!-- Security overrides — fix CVE-2026-86248, CVE-2026-68525 (Tomcat auth bypass) -->
+        <tomcat.version>10.1.60</tomcat.version>
+        <!-- NOTE: CVE-2026-59283 (spring-expression SpEL bypass) requires spring-framework 6.2.20+
+             which is not yet released in Maven Central. Re-apply <spring-framework.version>
+             override once Spring Boot ships a BOM that includes 6.2.20 or later. -->
+
         <!-- Third-party libraries -->
         <spring-data-jdbc.version>1.2.1.RELEASE</spring-data-jdbc.version>
         <springdoc-openapi-ui.version>2.8.13</springdoc-openapi-ui.version>
